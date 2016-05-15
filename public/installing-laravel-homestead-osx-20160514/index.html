@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WebDevelopment, Laravel Enthousiast.">
+
+    <title>Starting with Laravel Homestead on OSX Peter Steenbergen</title>
+
+    <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,300' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/libs.css">
+    <link rel="stylesheet" href="/prism.css">
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+<div class="container">
+    <div class="row main-row">
+        <div class="col-md-8 main-content">
+            
+    <a href="/">Back to home</a>
+
+    <h1 class="blog-post-title">Installing Laravel Homestead on OSX</h1>
+
+                <hr />
+<p>From time to time I need to reinstall my PC, and this guide helps setting op Laravel Homestead for local PHP development. But how did I setup those PATH settings again?
+I sometimes forget these simple steps. Thats why I setup this quick guide as my own memory but maybe it helps some other people aswell.</p>
+<p>The following Software will be installed on your system. </p>
+<ul>
+<li>Installing Composer</li>
+<li>Setting global PATH for composer</li>
+<li>Installing VirtualBox</li>
+<li>Installing Vagrant</li>
+<li>Installing Laravel Homestead</li>
+<li>Installing Laravel Installer</li>
+</ul>
+<h2>Installing Composer</h2>
+<p>Run the following commands in your terminal.</p>
+<pre><code class="language-bash">curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer</code></pre>
+<p>You can now run composer globally in your terminal by running:</p>
+<pre><code class="language-bash">composer</code></pre>
+<h2>Setting global PATH for composer</h2>
+<p>If you want to use composer applications globally you need to setup the correct PATH variable to the global vendor bin directory.
+From OSX Leopard and higher this is an easy process by running the following command in your terminal.</p>
+<pre><code class="language-bash">sudo -s 'echo "~/.composer/vendor/bin" &gt; /etc/paths.d/40-composer'</code></pre>
+<p>After running this command, you need to reboot the system. Alternatively, you can close and reopen the Terminal app to see new $PATH changes.</p>
+<h2>Installing VirtualBox on OSX</h2>
+<p>To Install Virtualbox on your OSX machine simply go to the website of <a href="https://www.virtualbox.org">https://www.virtualbox.org</a> and press the big button in the middle off the screen.</p>
+<h2>Installing Vagrant</h2>
+<p>To install Vagrant on your OSX machine simply go to the website of <a href="https://www.vagrantup.com">https://www.vagrantup.com</a> and press the big blue button 'Download'.</p>
+<h2>Installing Laravel Homestead</h2>
+<pre><code class="language-bash">composer global require "laravel/homestead=~2.0"</code></pre>
+<p>If you have setup the PATH correctly you now have access to the command 'homestead' within your terminal.
+Now its time to initialize homestead by running init in your terminal.</p>
+<pre><code class="language-bash">homestead init</code></pre>
+<p>This will create a homestead.yaml file for configuring homestead. To view and edit this configuration you can run.</p>
+<pre><code class="language-bash">homestead edit</code></pre>
+<h2>Installing Laravel Installer</h2>
+<p>For quick creation of new Laravel projects using the Laravel Installer is a real time saver.
+You can install it with this command.</p>
+<pre><code class="language-bash">composer global require "laravel/installer=~1.1"</code></pre>
+<h2>Usage of Laravel Homestead with the Laravel Installer</h2>
+<p>Laravel homestead defaults maps to a Code folder of the logged in user. So make sure that folder exists.
+You can run this command in your terminal to create it.</p>
+<pre><code class="language-bash">mkdir ~/Code</code></pre>
+<p>You go to the folder ~/Code</p>
+<pre><code class="language-bash">cd ~/Code</code></pre>
+<p>Lets create a new Laravel project by running the command</p>
+<pre><code class="language-bash">laravel new homestead</code></pre>
+<p>This will download and install a fresh laravel installation in the folder called homestead.
+The default configuration of Laravel homestead includes a site and path as homestead.app.</p>
+<p>Lets add that site in our local hosts file to access it.</p>
+<pre><code class="language-bash">sudo nano /etc/hosts</code></pre>
+<p>Add this line to it:</p>
+<pre><code>192.168.10.10  homestead.app</code></pre>
+<p>Now its time to check the working of the stack. By starting up the homestead machine.</p>
+<pre><code class="language-bash">homestead up</code></pre>
+<p>Now its time to open up your favourite web browser and go to the page:</p>
+<pre><code>http://homestead.app</code></pre>
+<p>Et Voilà, a Running Laravel running website on your started Virtual Machine.
+Check the following links for their original and more complete guides.</p>
+<ul>
+<li><a href="https://laravel.com/docs/5.2/homestead">Laravel Homestead</a></li>
+<li><a href="https://laravel.com/docs/5.2/installation">Laravel Installation docs</a></li>
+<li><a href="https://www.vagrantup.com">Vagrant</a></li>
+<li><a href="https://www.virtualbox.org">VirtualBox</a></li>
+</ul>
+            
+    <span class="post-footer">—————————————&nbsp;&nbsp; Please share if you liked it &nbsp;&nbsp;—————————————</span>
+
+    <div class="text-center">
+        <a href="https://twitter.com/share"
+           class="twitter-share-button"
+           data-text="Installing Laravel Homestead on OSX"
+           data-via="petericebear">Tweet</a>
+        &nbsp&nbsp&nbsp
+        <a href="https://twitter.com/intent/tweet?screen_name=petericebear"
+           class="twitter-mention-button"
+           data-related="themsaid">Tweet to @petericebear</a>
+    </div>
+        </div>
+
+        <div class="col-md-3 col-md-offset-1 sidebar">
+            <div class="avatar">
+                <a href="/"><img src="https://avatars1.githubusercontent.com/u/339796?v=3&s=460"></a>
+            </div>
+
+            <h1>Peter Steenbergen</h1>
+
+            <p>WebDeveloper [PHP, Laravel, Ionic] &amp; learning Swift.</p>
+
+            <a href="https://github.com/petericebear">@github</a> ·
+            <a href="https://twitter.com/petericebear">@twitter</a> ·
+            <a href="mailto:psteenbergen@gmail.com">@email</a>
+        </div>
+    </div>
+
+    <p class="footer">
+        &copy; Peter Steenbergen · Design and built with <a href="http://themsaid.github.io/katana/">Katana</a>
+    </p>
+</div>
+
+<script src="/prism.js"></script>
+
+<script>!function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+        if (!d.getElementById(id)) {
+            js = d.createElement(s);
+            js.id = id;
+            js.src = p + '://platform.twitter.com/widgets.js';
+            fjs.parentNode.insertBefore(js, fjs);
+        }
+    }(document, 'script', 'twitter-wjs');</script>
+<script>(function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+        a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+//    ga('create', 'UA-77757149-1', 'auto');
+    ga('send', 'pageview');
+</script>
+</body>
+</html>
