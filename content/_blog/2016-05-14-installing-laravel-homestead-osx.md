@@ -2,11 +2,11 @@
 view::extends: _includes.blog_post_base
 view::yields: post_body
 post::title: Installing Laravel Homestead on OSX
-post::brief: From time to time I need to reinstall my PC, and this guide helps setting op Laravel Homestead for local PHP development. But how did I setup those PATH settings again? Lets begin..
-pageTitle: Starting with Laravel Homestead on OSX
--------------------------------------------------
+post::brief: From time to time I need to reinstall my Mac, and this guide helps setting op Laravel Homestead for local PHP development. But how did I setup those PATH settings again? Lets begin..
+pageTitle: Starting with Laravel Homestead on OSX -
+---------------------------------------------------
 
-From time to time I need to reinstall my PC, and this guide helps setting op Laravel Homestead for local PHP development. But how did I setup those PATH settings again? 
+From time to time I need to reinstall my Mac, and this guide helps setting op Laravel Homestead for local PHP development. But how did I setup those PATH settings again? 
 I sometimes forget these simple steps. Thats why I setup this quick guide as my own memory but maybe it helps some other people aswell.
 
 The following Software will be installed on your system. 
