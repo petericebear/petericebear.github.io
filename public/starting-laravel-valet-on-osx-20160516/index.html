@@ -26,7 +26,7 @@
 
                 <hr />
 <p>Laravel Valet is a Laravel development environment for Mac minimalists. No Vagrant, No Apache, No Nginx, No /etc/hosts file. You can even share your sites publicly using local tunnels.
-Valet runs best with PHP 7 for speedy performances.</p>
+Valet runs best with PHP 7 for speedy performances. I came across some issues getting it running on my system and wanted to share them with you. You can find those issues and the solutions to them below the installation of PHP/Valet. </p>
 <h2>Installation of Laravel Valet on OSX</h2>
 <p>First update the Homebrew and get required formulas – formulas are just packages, like those in aptitude – (If you don’t have Homebrew yet, visit this page for installation and detailed usage: <a href="http://brew.sh"><a href="http://brew.sh">http://brew.sh</a></a>)</p>
 <pre><code class="language-bash">brew update &amp;&amp; brew tap homebrew/php</code></pre>
@@ -81,7 +81,7 @@ For more information about Laravel Valet please check the official page: <a href
 <p>For my OSX installation port 80 was not open by default. To make sure port 80 is open for TCP on all interfaces, I added</p>
 <pre><code class="language-bash">pass in proto tcp from any to any port 80</code></pre>
 <p>to /etc/pf.conf. Reloading pfctl didn't quite do the trick, but a reboot did. Now, the port shows up as open in port scan, and my virtual hosts are served as they should.</p>
-<h3>autostart the PHP and Database services after reboot</h3>
+<h3>Autostart the PHP and Database services after reboot</h3>
 <p>Brew has a good implementation to start services on your system after reboot. </p>
 <pre><code class="language-bash">brew services # this will initialize the services deamon
 brew services php70 start
