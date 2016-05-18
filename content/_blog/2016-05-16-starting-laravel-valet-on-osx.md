@@ -7,7 +7,7 @@ pageTitle: Starting with Laravel Valet on OSX -
 -----------------------------------------------
 
 Laravel Valet is a Laravel development environment for Mac minimalists. No Vagrant, No Apache, No Nginx, No /etc/hosts file. You can even share your sites publicly using local tunnels.
-Valet runs best with PHP 7 for speedy performances.
+Valet runs best with PHP 7 for speedy performances. I came across some issues getting it running on my system and wanted to share them with you. You can find those issues and the solutions to them below the installation of PHP/Valet. 
 
 ## Installation of Laravel Valet on OSX
 
@@ -115,7 +115,7 @@ pass in proto tcp from any to any port 80
 ```
 to /etc/pf.conf. Reloading pfctl didn't quite do the trick, but a reboot did. Now, the port shows up as open in port scan, and my virtual hosts are served as they should.
 
-### autostart the PHP and Database services after reboot
+### Autostart the PHP and Database services after reboot
 
 Brew has a good implementation to start services on your system after reboot. 
 
