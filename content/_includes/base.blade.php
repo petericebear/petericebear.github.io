@@ -63,7 +63,7 @@
         a.src = g;
         m.parentNode.insertBefore(a, m)
     })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-//    ga('create', 'UA-77757149-1', 'auto');
+    ga('create', 'UA-77757149-1', 'auto');
     ga('send', 'pageview');
 </script>
 </body>
