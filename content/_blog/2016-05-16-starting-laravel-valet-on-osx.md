@@ -75,7 +75,7 @@ Zend Engine v3.0.0, Copyright (c) 1998-2016 Zend Technologies
     with Zend OPcache v7.0.6-dev, Copyright (c) 1999-2016, by Zend Technologies
 ```
 
-You that you have PHP setup its time for the magic of Laravel Valet.
+Now that you have setup PHP, its time for the magic of Laravel Valet.
 ```bash
 brew install mariadb # If you want to use databases
 composer global require laravel/valet # This is the Magic
