@@ -3,15 +3,15 @@ view::extends: _includes.blog_post_base
 view::yields: post_body
 post::title: PHP Solarium Multi-Select facets with SOLR
 post::brief: How to use multiple selects with SOLR for a guided navigation. Handy for filtering with multiple selections for a given list.
-pageTitle: SOLR - Using Multi-Select facets in PHP Solarium
+pageTitle: SOLR - Using Multi-Select facets in PHP Solarium - 
 -----------------------------------------------------------
 
-This blog will be my first in a series about [SOLR](http://lucene.apache.org/solr/) and the populair [PHP Solarium](https://github.com/solariumphp/solarium) library created by Bas de Nooijer.
-Solarium is by far the best library in PHP for querying SOLR. We had some issues with advanced faceting for finding Jobs in on of our projects and I would like to share it with you.
+This blog will be my first in a series about [SOLR](http://lucene.apache.org/solr/) and the popular [PHP Solarium](https://github.com/solariumphp/solarium) library created by Bas de Nooijer.
+Solarium is by far the best library in PHP for querying SOLR. We had some issues with advanced faceting for finding Jobs in one of our projects and I would like to share that with you.
 
 Lets start with some basics and information about faceting. Faceting is the arrangement of search results into categories based on indexed terms. Searchers are presented with the indexed terms, along with numerical counts of how many matching documents were found were each term. Faceting makes it easy for users to explore search results, narrowing in on exactly the results they are looking for.
 
-One of our projects was about building a search for a job board and one of our facets is the degree field. A job applicant can have multiple degrees, or is looking for a job which can be done at multiple degree levels.
+One of our projects was about building a search for a jobboard and one of our facets is the degree field. A job applicant can have multiple degrees, or is looking for a job which can be done at multiple degree levels.
 
 **facet=true&facet.field=degree**  
 == Degrees ==  
@@ -70,6 +70,6 @@ $facets->createFacetField(array('field'=>'degree', 'exclude'=>'exclude'));
 $client->select($query);
 ```
 
-That is all it takes to build an 'OR' based facetresult. 
+That is all it takes to build a SOLR 'OR' based faceting result instead of the default 'AND' based faceting result.
 
 In the next blog I will show you a way to implement this within a Laravel project.
