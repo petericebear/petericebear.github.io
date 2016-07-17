@@ -29,7 +29,7 @@
 
             <h1>Peter Steenbergen</h1>
 
-            <p>WebDeveloper [PHP, Laravel, Ionic] &amp; learning Swift.</p>
+            <p>WebDeveloper [PHP, Laravel, Ionic, SOLR] &amp; learning Swift.</p>
 
             <a href="https://github.com/petericebear">@github</a> ·
             <a href="https://twitter.com/petericebear">@twitter</a> ·
