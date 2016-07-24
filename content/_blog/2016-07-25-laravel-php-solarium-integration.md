@@ -19,7 +19,7 @@ In this blogpost we will integrate the code of the first blogpost from [Multi-Se
 laravel new solarium
 ```
 
-If you are starting with Laravel and you have an OSX machine, I would suggest you start with my [Starting with Laravel Valet on OSX](http://petericebear.github.io/starting-laravel-valet-on-osx-20160516/) tutorial to setup a quick local development environment.
+If you are starting fresh with Laravel and you have an OSX machine, I would suggest you start with my [Starting with Laravel Valet on OSX](http://petericebear.github.io/starting-laravel-valet-on-osx-20160516/) tutorial to setup a quick local development environment.
 You can test your new Laravel project in the browser at the url: http://solarium.dev/. 
 
 ## Add a solarium configuration
@@ -256,5 +256,7 @@ $facets->createFacetField(array('field'=>'degree', 'exclude'=>'exclude'));
 Now if you go the the URL of http://solarium.dev/search, It should return numFound: 0 in your browser.
 
 In my next blog items I will try to explain how to create a custom schema.xml file to add your own fields to the SOLR instance and for searching in special fields like Spatial Search for finding results near a given location.
+
+If you need a **fast** and **managed SOLR server** let me know at psteenbergen[at]gmail.com. I can hook you up with a **blazing fast** SOLR server starting at **€24,99 per month**.
 
 Be well and till next time!
