@@ -6,15 +6,16 @@ post::brief: Think its hard to start with SOLR? Guess again; It is a breeze to s
 pageTitle: SOLR - Laravel integration of PHP Solarium - 
 ---
 
-This is my second blog in a series about [SOLR](http://lucene.apache.org/solr/) with [PHP Solarium](https://github.com/solariumphp/solarium) library. My first blog was about the usage of OR filters to create [Multi-Select facets with SOLR](http://petericebear.github.io/php-solarium-multi-select-facets-20160720/).
-With this blog item I will show you how easy it is to use the PHP Solarium library with the Laravel framework. 
+This is my second blog in a series about [SOLR](http://lucene.apache.org/solr/) with the [PHP Solarium](https://github.com/solariumphp/solarium) library. My first blog was about the usage of OR filters to create [Multi-Select facets with SOLR](http://petericebear.github.io/php-solarium-multi-select-facets-20160720/).
+With this blog item I will show you how easy it is to implement the PHP Solarium library in the Laravel framework. 
 
 ## SOLR Instance
-This blogpost will assume that you have a running SOLR instance somewhere, if you don't have a running SOLR instance then follow this guide to install one on a DigitalOcean droplet - [Install SOLR on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-solr-on-ubuntu-14-04).   
+This blogpost will assume that you have a running SOLR instance somewhere, if you don't have a running SOLR instance then please follow this guide to install one on a DigitalOcean droplet - [Install SOLR on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-solr-on-ubuntu-14-04).   
 
 In this blogpost we will integrate the code of the first blogpost from [Multi-Select facets with SOLR](http://petericebear.github.io/php-solarium-multi-select-facets-20160720/) in a new Laravel project. 
 
 ## Lets start with a fresh Laravel project
+
 ```bash
 laravel new solarium
 ```
@@ -23,6 +24,7 @@ If you are starting fresh with Laravel and you have an OSX machine, I would sugg
 You can test your new Laravel project in the browser at the url: http://solarium.dev/. 
 
 ## Add a solarium configuration
+
 The Client of solarium library uses a injection of a configuration array. Make a new file named solarium.php in the config folder and add the following content to make this configuration array.
 
 ```php

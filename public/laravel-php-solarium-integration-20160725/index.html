@@ -24,14 +24,14 @@
 
     <h1 class="blog-post-title">How to use PHP solarium in a Laravel project</h1>
 
-                <p>This is my second blog in a series about <a href="http://lucene.apache.org/solr/">SOLR</a> with <a href="https://github.com/solariumphp/solarium">PHP Solarium</a> library. My first blog was about the usage of OR filters to create <a href="http://petericebear.github.io/php-solarium-multi-select-facets-20160720/">Multi-Select facets with SOLR</a>.
-With this blog item I will show you how easy it is to use the PHP Solarium library with the Laravel framework. </p>
+                <p>This is my second blog in a series about <a href="http://lucene.apache.org/solr/">SOLR</a> with the <a href="https://github.com/solariumphp/solarium">PHP Solarium</a> library. My first blog was about the usage of OR filters to create <a href="http://petericebear.github.io/php-solarium-multi-select-facets-20160720/">Multi-Select facets with SOLR</a>.
+With this blog item I will show you how easy it is to implement the PHP Solarium library in the Laravel framework. </p>
 <h2>SOLR Instance</h2>
-<p>This blogpost will assume that you have a running SOLR instance somewhere, if you don't have a running SOLR instance then follow this guide to install one on a DigitalOcean droplet - <a href="https://www.digitalocean.com/community/tutorials/how-to-install-solr-on-ubuntu-14-04">Install SOLR on Ubuntu</a>.   </p>
+<p>This blogpost will assume that you have a running SOLR instance somewhere, if you don't have a running SOLR instance then please follow this guide to install one on a DigitalOcean droplet - <a href="https://www.digitalocean.com/community/tutorials/how-to-install-solr-on-ubuntu-14-04">Install SOLR on Ubuntu</a>.   </p>
 <p>In this blogpost we will integrate the code of the first blogpost from <a href="http://petericebear.github.io/php-solarium-multi-select-facets-20160720/">Multi-Select facets with SOLR</a> in a new Laravel project. </p>
 <h2>Lets start with a fresh Laravel project</h2>
 <pre><code class="language-bash">laravel new solarium</code></pre>
-<p>If you are starting with Laravel and you have an OSX machine, I would suggest you start with my <a href="http://petericebear.github.io/starting-laravel-valet-on-osx-20160516/">Starting with Laravel Valet on OSX</a> tutorial to setup a quick local development environment.
+<p>If you are starting fresh with Laravel and you have an OSX machine, I would suggest you start with my <a href="http://petericebear.github.io/starting-laravel-valet-on-osx-20160516/">Starting with Laravel Valet on OSX</a> tutorial to setup a quick local development environment.
 You can test your new Laravel project in the browser at the url: <a href="http://solarium.dev/">http://solarium.dev/</a>. </p>
 <h2>Add a solarium configuration</h2>
 <p>The Client of solarium library uses a injection of a configuration array. Make a new file named solarium.php in the config folder and add the following content to make this configuration array.</p>
