@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WebDevelopment, Laravel Enthousiast.">
+
+    <title>SOLR - Laravel integration of PHP Solarium - Peter Steenbergen</title>
+
+    <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,300' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/libs.css">
+    <link rel="stylesheet" href="/prism.css">
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+<div class="container">
+    <div class="row main-row">
+        <div class="col-md-8 main-content">
+            
+    <a href="/">Back to home</a>
+
+    <h1 class="blog-post-title">How to use PHP solarium in a Laravel project</h1>
+
+                <p>This is my second blog in a series about <a href="http://lucene.apache.org/solr/">SOLR</a> with <a href="https://github.com/solariumphp/solarium">PHP Solarium</a> library. My first blog was about the usage of OR filters to create <a href="http://petericebear.github.io/php-solarium-multi-select-facets-20160720/">Multi-Select facets with SOLR</a>.
+With this blog item I will show you how easy it is to use the PHP Solarium library with the Laravel framework. </p>
+<h2>SOLR Instance</h2>
+<p>This blogpost will assume that you have a running SOLR instance somewhere, if you don't have a running SOLR instance then follow this guide to install one on a DigitalOcean droplet - <a href="https://www.digitalocean.com/community/tutorials/how-to-install-solr-on-ubuntu-14-04">Install SOLR on Ubuntu</a>.   </p>
+<p>In this blogpost we will integrate the code of the first blogpost from <a href="http://petericebear.github.io/php-solarium-multi-select-facets-20160720/">Multi-Select facets with SOLR</a> in a new Laravel project. </p>
+<h2>Lets start with a fresh Laravel project</h2>
+<pre><code class="language-bash">laravel new solarium</code></pre>
+<p>If you are starting with Laravel and you have an OSX machine, I would suggest you start with my <a href="http://petericebear.github.io/starting-laravel-valet-on-osx-20160516/">Starting with Laravel Valet on OSX</a> tutorial to setup a quick local development environment.
+You can test your new Laravel project in the browser at the url: <a href="http://solarium.dev/">http://solarium.dev/</a>. </p>
+<h2>Add a solarium configuration</h2>
+<p>The Client of solarium library uses a injection of a configuration array. Make a new file named solarium.php in the config folder and add the following content to make this configuration array.</p>
+<pre><code class="language-php">&lt;?php
+
+return [
+    'endpoint' =&gt; [
+        'localhost' =&gt; [
+            'host' =&gt; env('SOLR_HOST', '127.0.0.1'),
+            'port' =&gt; env('SOLR_PORT', '8983'),
+            'path' =&gt; env('SOLR_PATH', '/solr/'),
+            'core' =&gt; env('SOLR_CORE', 'collection1')
+        ]
+    ]
+];</code></pre>
+<p>This configuration assumes that the SOLR is installed on the local machine, uses the default port of 8983, the default solr install path and with a default collection named collection1.<br />
+You can override every configuration setting within the .env file in your projectfolder. If you installed SOLR with the tutorial you can add the IP of the DigitalOcean droplet by adding this to .env file.</p>
+<pre><code class="language-php">SOLR_HOST=99.9.9.999</code></pre>
+<p>Where 99.9.9.999 is the IP of your droplet. If you want to know more about environment configuration please look at the guide on the Laravel site for the official <a href="https://laravel.com/docs/5.2/configuration#environment-configuration">environment configuration</a>.</p>
+<h2>Install the PHP Solarium library</h2>
+<p>This library is the bread and butter for SOLR usage within PHP. This can be quickly installed by composer using the following command.</p>
+<pre><code class="language-bash">composer require solarium/solarium</code></pre>
+<p>At this time of writing it will install the version of 3.6.</p>
+<h2>Lets boot up the Solarium Client</h2>
+<p>Within Laravel service providers are the central place of all the applications bootstrapping. Bootstrapping is nothing more than registering things, including registering service container bindings, event listeners, middleware, and even routes. Service providers are the central place to configure your application.
+So lets make a service provider for registering the Solarium Client with our created solarium configuration file.</p>
+<pre><code class="language-bash">php artisan make:provider SolariumServiceProvider</code></pre>
+<p>This will create the file SolariumServiceProvider.php within your app/Providers folder. Open this file in your favourite editor and add the following contents:</p>
+<pre><code class="language-php">&lt;?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Solarium\Client;
+
+class SolariumServiceProvider extends ServiceProvider
+{
+    protected $defer = true;
+
+    /**
+     * Register any application services.
+     *
+     * @return  void
+     */
+    public function register()
+    {
+        $this-&gt;app-&gt;bind(Client::class, function ($app) {
+            return new Client($app['config']['solarium']);
+        });
+    }
+
+    public function provides()
+    {
+        return [Client::class];
+    }
+}</code></pre>
+<p>Now open up the file app/config/app.php and add the new SolariumServiceProvider to the other application providers.</p>
+<pre><code class="language-php">return [
+    'providers' =&gt; [
+        // List off others providers...
+        App\Providers\SolariumServiceProvider::class,
+    ]
+];</code></pre>
+<p>Now every time you instantiate the Solarium\Client within your application it will inject the environment configuration. Notice the $defer setting, this setting makes sure that its not loaded at every request but only when you use the Client within your application. This will make you application faster if you don't always need the Client.
+If your application needs it with every request remove that line from the service provider.</p>
+<h2>Testing the integration</h2>
+<p>How can we test our Laravel application with SOLR that everything is setup correctly for querying SOLR? Well, SOLR has a built in ping feature so you can easily monitor your SOLR instance if its up or down.
+So lets create a SolariumController with the Ping feature.</p>
+<pre><code class="language-php">php artisan make:controller SolariumController</code></pre>
+<p>This will add the Controller to the file app/Http/Controllers/SolariumController.php. Open this file in your favourite editor and add the following content.</p>
+<pre><code class="language-php">&lt;?php
+
+namespace App\Http\Controllers;
+
+class SolariumController extends Controller
+{
+    protected $client;
+
+    public function __construct(\Solarium\Client $client)
+    {
+        $this-&gt;client = $client;
+    }
+
+    public function ping()
+    {
+        // create a ping query
+        $ping = $this-&gt;client-&gt;createPing();
+
+        // execute the ping query
+        try {
+            $this-&gt;client-&gt;ping($ping);
+            return response()-&gt;json('OK');
+        } catch (\Solarium\Exception $e) {
+            return response()-&gt;json('ERROR', 500);
+        }
+    }
+}</code></pre>
+<p>Now lets create a ping route within the routes file. You can find the routes file at the default location app\Http\routes.php.</p>
+<pre><code class="language-php">Route::get('/ping', 'SolariumController@ping');</code></pre>
+<p>Now if you go the the URL of <a href="http://solarium.dev/ping">http://solarium.dev/ping</a> it should return a string with the text 'OK'. If it returns the string 'ERROR' please check the IP, path and the name of the collection of the SOLR instance.</p>
+<p>Now what is happening here?</p>
+<p>In the constructor we use the IoC binding for the solarium client. Our created SolariumServiceProvider uses its binding and injects our environment configuration to the $client variable of the controller.</p>
+<p>You can now use $this-&gt;client in the whole controller for tinkering with the Solarium library.</p>
+<h2>Using the Multi-Select facets from our first blog</h2>
+<p>Now that we have a connection to our running SOLR instance. We can now test our <a href="http://petericebear.github.io/php-solarium-multi-select-facets-20160720/">Multi-Select facets with SOLR</a> code by updating the Controller with the following content.</p>
+<pre><code class="language-php">&lt;?php
+
+namespace App\Http\Controllers;
+
+class SolariumController extends Controller
+{
+    protected $client;
+
+    public function __construct(\Solarium\Client $client)
+    {
+        $this-&gt;client = $client;
+    }
+
+    public function ping()
+    {
+        // create a ping query
+        $ping = $this-&gt;client-&gt;createPing();
+
+        // execute the ping query
+        try {
+            $this-&gt;client-&gt;ping($ping);
+            return response()-&gt;json('OK');
+        } catch (\Solarium\Exception $e) {
+            return response()-&gt;json('ERROR', 500);
+        }
+    }
+
+    public function search()
+    {
+        $query = $client-&gt;createSelect();
+        $query-&gt;addFilterQuery(array('key'=&gt;'provence', 'query'=&gt;'provence:Groningen', 'tag'=&gt;'include'));
+        $query-&gt;addFilterQuery(array('key'=&gt;'degree', 'query'=&gt;'degree:MBO', 'tag'=&gt;'exclude'));
+        $facets = $query-&gt;getFacetSet();
+        $facets-&gt;createFacetField(array('field'=&gt;'degree', 'exclude'=&gt;'exclude'));
+        $resulset = $client-&gt;select($query);
+
+        // display the total number of documents found by solr
+        echo 'NumFound: ' . $resultset-&gt;getNumFound();
+
+        // show documents using the resultset iterator
+        foreach ($resultset as $document) {
+
+            echo '&lt;hr/&gt;&lt;table&gt;';
+
+            // the documents are also iterable, to get all fields
+            foreach ($document as $field =&gt; $value) {
+                // this converts multivalue fields to a comma-separated string
+                if (is_array($value)) {
+                    $value = implode(', ', $value);
+                }
+
+                echo '&lt;tr&gt;&lt;th&gt;' . $field . '&lt;/th&gt;&lt;td&gt;' . $value . '&lt;/td&gt;&lt;/tr&gt;';
+            }
+
+            echo '&lt;/table&gt;';
+        }
+    }
+}</code></pre>
+<p>Now add the search router to routes file. You can find the routes file at the default location app\Http\routes.php.</p>
+<pre><code class="language-php">Route::get('/search', 'SolariumController@search');</code></pre>
+<p>You are probably getting an error, this is because I already have a running instance with the fields and it is just for showing how easy it is to add the code from my first blog for using it into a Laravel project.</p>
+<p>If you want to test SOLR search function with a clean install just removed these rows from the search function.</p>
+<pre><code class="language-php">// Remove these rows
+$query-&gt;addFilterQuery(array('key'=&gt;'provence', 'query'=&gt;'provence:Groningen', 'tag'=&gt;'include'));
+$query-&gt;addFilterQuery(array('key'=&gt;'degree', 'query'=&gt;'degree:MBO', 'tag'=&gt;'exclude'));
+$facets = $query-&gt;getFacetSet();
+$facets-&gt;createFacetField(array('field'=&gt;'degree', 'exclude'=&gt;'exclude'));</code></pre>
+<p>Now if you go the the URL of <a href="http://solarium.dev/search">http://solarium.dev/search</a>, It should return numFound: 0 in your browser.</p>
+<p>In my next blog items I will try to explain how to create a custom schema.xml file to add your own fields to the SOLR instance and for searching in special fields like Spatial Search for finding results near a given location.</p>
+<p>Be well and till next time!</p>
+            
+    <span class="post-footer">—————————————&nbsp;&nbsp; Please share if you liked it &nbsp;&nbsp;—————————————</span>
+
+    <div class="text-center">
+        <a href="https://twitter.com/share"
+           class="twitter-share-button"
+           data-text="How to use PHP solarium in a Laravel project"
+           data-via="petericebear">Tweet</a>
+        &nbsp&nbsp&nbsp
+        <a href="https://twitter.com/intent/tweet?screen_name=petericebear"
+           class="twitter-mention-button"
+           data-related="themsaid">Tweet to @petericebear</a>
+    </div>
+        </div>
+
+        <div class="col-md-3 col-md-offset-1 sidebar">
+            <div class="avatar">
+                <a href="/"><img src="https://avatars1.githubusercontent.com/u/339796?v=3&s=460"></a>
+            </div>
+
+            <h1>Peter Steenbergen</h1>
+
+            <p>WebDeveloper [PHP, Laravel, Ionic, SOLR] &amp; learning Swift.</p>
+
+            <a href="https://github.com/petericebear">@github</a> ·
+            <a href="https://twitter.com/petericebear">@twitter</a> ·
+            <a href="mailto:psteenbergen@gmail.com">@email</a>
+        </div>
+    </div>
+
+    <p class="footer">
+        &copy; Peter Steenbergen · Design and built with <a href="http://themsaid.github.io/katana/">Katana</a>
+    </p>
+</div>
+
+<script src="/prism.js"></script>
+
+<script>!function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+        if (!d.getElementById(id)) {
+            js = d.createElement(s);
+            js.id = id;
+            js.src = p + '://platform.twitter.com/widgets.js';
+            fjs.parentNode.insertBefore(js, fjs);
+        }
+    }(document, 'script', 'twitter-wjs');</script>
+<script>(function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+        a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+    ga('create', 'UA-77757149-1', 'auto');
+    ga('send', 'pageview');
+</script>
+</body>
+</html>
