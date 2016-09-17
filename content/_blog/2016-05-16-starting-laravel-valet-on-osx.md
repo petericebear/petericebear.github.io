@@ -121,8 +121,8 @@ Brew has a good implementation to start services on your system after reboot.
 
 ```bash
 brew services # this will initialize the services deamon
-brew services php70 start
-brew services mariadb start
+brew services start php70
+brew services start mariadb
 brew services list # this command list all (un)active services
 ```
 
@@ -146,5 +146,5 @@ And change the following words of the variables:
 Save the file and run:
 
 ```bash
-brew services php70 restart
+brew services restart php70
 ```
