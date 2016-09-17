@@ -84,8 +84,8 @@ For more information about Laravel Valet please check the official page: <a href
 <h3>Autostart the PHP and Database services after reboot</h3>
 <p>Brew has a good implementation to start services on your system after reboot. </p>
 <pre><code class="language-bash">brew services # this will initialize the services deamon
-brew services php70 start
-brew services mariadb start
+brew services start php70
+brew services start mariadb
 brew services list # this command list all (un)active services</code></pre>
 <h3>PHP Deprecation messages</h3>
 <p>After running the command 'valet park' the first time I got a PHP deprecation message for the memcached extension.</p>
@@ -99,7 +99,7 @@ Deprecated: PHP Startup: memcached.sess_lock_wait and memcached.sess_lock_max_wa
 <li>change memcached.sess_lock_max_wait to memcached.sess_lock_wait_max</li>
 </ul>
 <p>Save the file and run:</p>
-<pre><code class="language-bash">brew services php70 restart</code></pre>
+<pre><code class="language-bash">brew services restart php70</code></pre>
             
     <span class="post-footer">—————————————&nbsp;&nbsp; Please share if you liked it &nbsp;&nbsp;—————————————</span>
 
