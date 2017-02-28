@@ -174,6 +174,7 @@ class MessagePosted implements ShouldBroadcast
 
     public function broadcastWith()
     {
+        // This must always be an array. Since it will be parsed with json_encode()
         return [
             'user' => $this->user->name,
             'message' => $this->message,
