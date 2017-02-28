@@ -76,9 +76,11 @@ The default configuration of Laravel homestead includes a site and path as homes
 <pre><code class="language-bash">sudo nano /etc/hosts</code></pre>
 <p>Add this line to it:</p>
 <pre><code>192.168.10.10  homestead.app</code></pre>
+<p>Make sure you have setup a SSH key pair for connecting to the homestead server. If you already setup a SSH key pair you may skip this step.</p>
+<pre><code class="language-bash">ssh-keygen -t rsa -C "your@email.com"</code></pre>
 <p>Now its time to check the working of the stack. By starting up the homestead machine.</p>
 <pre><code class="language-bash">homestead up</code></pre>
-<p>Now its time to open up your favourite web browser and go to the page:</p>
+<p>Now open up your favourite web browser and go to the page:</p>
 <pre><code>http://homestead.app</code></pre>
 <p>Et Voilà, a Running Laravel running website on your started Virtual Machine.
 Check the following links for their original and more complete guides.</p>
