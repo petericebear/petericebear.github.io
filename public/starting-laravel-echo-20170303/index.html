@@ -198,7 +198,7 @@ class MessageController extends Controller
 
                     &lt;div class="panel-body"&gt;
                         &lt;ul&gt;
-                            &lt;li v-for="item in messages"&gt;itemmessage - &lt;i&gt;itemuser&lt;/i&gt;&lt;/li&gt;
+                            &lt;li v-for="item in messages"&gt;{{ item.message }} - &lt;i&gt;{{ item.user }}&lt;/i&gt;&lt;/li&gt;
                         &lt;/ul&gt;
 
                         &lt;input type="text" v-model="message"&gt;&lt;br /&gt;

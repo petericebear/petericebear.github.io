@@ -253,7 +253,7 @@ Open the file "resource/assets/js/components/Example.vue" and set the contents t
 
                     <div class="panel-body">
                         <ul>
-                            <li v-for="item in messages">{{ item.message }} - <i>{{ item.user }}</i></li>
+                            <li v-for="item in messages">@{{ item.message }} - <i>@{{ item.user }}</i></li>
                         </ul>
 
                         <input type="text" v-model="message"><br />
