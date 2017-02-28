@@ -115,13 +115,18 @@ Add this line to it:
 192.168.10.10  homestead.app
 ```
 
+Make sure you have setup a SSH key pair for connecting to the homestead server. If you already setup a SSH key pair you may skip this step.
+```bash
+ssh-keygen -t rsa -C "your@email.com"
+```
+
 Now its time to check the working of the stack. By starting up the homestead machine.
 
 ```bash
 homestead up
 ```
 
-Now its time to open up your favourite web browser and go to the page:
+Now open up your favourite web browser and go to the page:
 
 ```
 http://homestead.app
