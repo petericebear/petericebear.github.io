@@ -258,7 +258,7 @@ Open the file "resource/assets/js/components/Example.vue" and set the contents t
                         </ul>
 
                         <input type="text" v-model="message"><br />
-                        <button class="btn btn-success">Send!</button>
+                        <button class="btn btn-success" @click="send()">Send!</button>
                     </div>
                 </div>
             </div>
