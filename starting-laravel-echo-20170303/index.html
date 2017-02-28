@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WebDevelopment, Laravel Enthousiast.">
+
+    <title>Starting Laravel Echo and PusherJS - realtime message updates - Peter Steenbergen</title>
+
+    <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,300' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/libs.css">
+    <link rel="stylesheet" href="/prism.css">
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+<div class="container">
+    <div class="row main-row">
+        <div class="col-md-8 main-content">
+            
+    <a href="/">Back to home</a>
+
+    <h1 class="blog-post-title">Starting with Laravel Echo and PusherJS</h1>
+
+                <hr />
+<p>I was excited from day 1 to try out Laravel Echo. Unfortunately I ran into an issue and stopped working with it and build the needed custom code for realtime updates.
+But last week I found some time to start fiddling with it once again, and I am hooked. </p>
+<p>The issue I had came back but now with the extra time I found the solution and THAT is the reason I wrote this blog item. So lets begin to bring to excitement from Laravel Echo also to you.</p>
+<h2>Create a new Laravel project</h2>
+<pre><code class="language-bash">laravel new laravelecho</code></pre>
+<p>This will check out a new installation of laravel into the folder laravelecho. If you do not have the Laravel installed you can run &quot;composer create-project laravel/laravel laravelecho&quot;.</p>
+<h2>Laravel Echo prerequisites</h2>
+<p>Install the npm prerequisites for using Laravel Echo and the pusherJS library.</p>
+<pre><code class="language-bash">cd laravelecho
+npm install --save laravel-echo pusher-js</code></pre>
+<h2>Setup the configurations</h2>
+<p>Open &quot;resources/assets/js/bootstrap.js&quot; in your favourite editor.
+In the bottom of the file uncomment the last block from the file.</p>
+<pre><code class="language-js">// Uncomment these rows
+// import Echo from "laravel-echo"
+
+// window.Echo = new Echo({
+//     broadcaster: 'pusher',
+//     key: 'your-pusher-key'
+// });
+
+// To
+import Echo from "laravel-echo"
+
+window.Echo = new Echo({
+     broadcaster: 'pusher',
+     key: 'your-pusher-key'
+});</code></pre>
+<p>If you are located in the EU like me, change the last block with the element &quot;cluster: 'eu'&quot; and if you want the connection to be encrypted (what you should) set the encrypted flag to true.</p>
+<pre><code class="language-js">window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: 'your-pusher-key',
+    cluster: 'eu',
+    encrypted: true
+});</code></pre>
+<p>Be sure to replace the 'your-pusher-key' with the key provided from your PusherJS account after registration of your application at their website.</p>
+<p>Now open the file &quot;config/broadcasting.php&quot; and change the following lines within the options element. If you did not added the cluster or encryption in the previous section you can skip this step.</p>
+<pre><code class="language-php">&lt;?php
+    // ...
+    'connections' =&gt; [
+
+        'pusher' =&gt; [
+            'driver' =&gt; 'pusher',
+            'key' =&gt; env('PUSHER_APP_KEY'),
+            'secret' =&gt; env('PUSHER_APP_SECRET'),
+            'app_id' =&gt; env('PUSHER_APP_ID'),
+            'options' =&gt; [
+                'cluster' =&gt; 'eu',
+                'encrypted' =&gt; true,
+            ],
+        ],
+
+    // ... Rest of the file</code></pre>
+<p>Set the following variables in your .env for activating pusher as a broadcastdriver with your credentials.</p>
+<pre><code class="language-bash">BROADCAST_DRIVER=pusher
+PUSHER_APP_KEY=
+PUSHER_APP_SECRET=
+PUSHER_APP_ID=</code></pre>
+<h2>Creating the front-end scaffold</h2>
+<p>To get started quickly with authentication of users lets make use of the basic scaffold of Laravel.</p>
+<pre><code class="language-bash">php artisan make:auth</code></pre>
+<p>I assume that you use Laravel Valet or you can open the webapplication by opening the url: &quot;<a href="http://laravelecho.dev/">http://laravelecho.dev/</a>&quot;. Register yourself as a new user in the application.
+If you are having problems with opening the application url, please check out my other blog posts that will cover starting with Valet or Homestead on OSX.</p>
+<h2>Adding a new broadcasting channel</h2>
+<p>For this demo we will create a public channel called &quot;messages&quot;. Open &quot;routes/channels.php&quot; in your favourite editor.</p>
+<pre><code class="language-php">// Add the messages public channel
+Broadcast::channel('messages', function() {
+    return true;
+});</code></pre>
+<p>Now to activate these channels in this file you have to activate the BroadcastServiceProvider class in config/app.php file. You can find it in the heading of &quot;Application Service Providers&quot;.</p>
+<pre><code class="language-php">// config.app
+
+    //... snip
+        /*
+         * Application Service Providers...
+         */
+        App\Providers\AppServiceProvider::class,
+        App\Providers\AuthServiceProvider::class,
+        App\Providers\BroadcastServiceProvider::class, // Uncomment this row.
+        App\Providers\EventServiceProvider::class,
+        App\Providers\RouteServiceProvider::class,
+
+    //... snip    </code></pre>
+<h2>Lets create an MessagePosted event</h2>
+<p>This event will broadcast all public data to all listeners on the channel, when the event is fired.</p>
+<pre><code class="language-bash">php artisan make:event MessagePosted</code></pre>
+<p>And set the contents of this file to:</p>
+<pre><code class="language-php">&lt;?php
+
+namespace App\Events;
+
+use App\User;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+
+class MessagePosted implements ShouldBroadcast
+{
+    use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    protected $user;
+    protected $message;
+
+    public function __construct(User $user, $message)
+    {
+        $this-&gt;user = $user;
+        $this-&gt;message = $message;
+    }
+
+    public function broadcastWith()
+    {
+        return [
+            'user' =&gt; $this-&gt;user-&gt;name,
+            'message' =&gt; $this-&gt;message,
+        ];
+    }
+
+    public function broadcastAs()
+    {
+        return 'newMessage';
+    }
+
+    public function broadcastOn()
+    {
+        return new Channel('messages');
+    }
+}
+</code></pre>
+<p>On purpose the class vars are not public. The data that is broadcasted can be set/overridden within the method broadcastWith. In this case I choose what data is explicit broadcasted and not the complete User model.</p>
+<p>With the broadcastAs method you can give a custom name for the broadcasted Eventname, the default name what is broadcasted is App\Events{ClassName}. In this case App\Events\MessagePosted.</p>
+<p>Now.. Keep that broadcastAs method in your mind with its returned string value.. ;-)</p>
+<h2>Creating the MessageController and route for receiving message</h2>
+<p>This controller will process and dispatch the incoming message event. Run the following command in your terminal:</p>
+<pre><code class="language-bash">php artisan make:controller MessageController</code></pre>
+<p>And set the following contents to the file:</p>
+<pre><code class="language-php">&lt;?php
+
+namespace App\Http\Controllers;
+
+use App\Events\MessagePosted;
+use Auth;
+use Illuminate\Http\Request;
+
+class MessageController extends Controller
+{
+    public function __construct()
+    {
+        $this-&gt;middleware('auth');
+    }
+
+    public function post(Request $request)
+    {
+        event(new MessagePosted(Auth::user(), $request-&gt;get('message')));
+    }
+}</code></pre>
+<p>Add the following line to your routes file to active this new class and methods.  </p>
+<pre><code class="language-php">Route::post('/message', 'MessageController@post');</code></pre>
+<h2>FrontEnd action</h2>
+<p>Now that all the legwork is done for the backend. Lets finish this app by altering the homepage after login.</p>
+<p>Open the file &quot;resource/assets/js/components/Example.vue&quot; and set the contents to:</p>
+<pre><code class="language-html">&lt;template&gt;
+    &lt;div class="container"&gt;
+        &lt;div class="row"&gt;
+            &lt;div class="col-md-8 col-md-offset-2"&gt;
+                &lt;div class="panel panel-default"&gt;
+                    &lt;div class="panel-heading"&gt;Example Chat&lt;/div&gt;
+
+                    &lt;div class="panel-body"&gt;
+                        &lt;ul&gt;
+                            &lt;li v-for="item in messages"&gt;itemmessage - &lt;i&gt;itemuser&lt;/i&gt;&lt;/li&gt;
+                        &lt;/ul&gt;
+
+                        &lt;input type="text" v-model="message"&gt;&lt;br /&gt;
+                        &lt;button class="btn btn-success"&gt;Send!&lt;/button&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+    export default {
+        data(){
+            return {
+                messages: [],
+                message: '',
+            }
+        },
+
+        methods: {
+            send() {
+                axios.post('/message', {message: this.message})
+                    .then((response) =&gt; {
+                        this.message = '';
+                    });
+            }
+        },
+
+        mounted() {
+            Echo.channel('messages')
+                .listen('.newMessage', (message) =&gt; {
+                    this.messages.push(message);
+                });
+        }
+    }
+&lt;/script&gt;</code></pre>
+<p>Update the content section of the file &quot;resources/views/home.blade.php&quot; to:</p>
+<pre><code class="language-php">&lt;div class="container"&gt;
+    &lt;div class="row"&gt;
+        &lt;div class="col-md-8 col-md-offset-2"&gt;
+            &lt;div class="panel panel-default"&gt;
+                &lt;div class="panel-heading"&gt;Dashboard&lt;/div&gt;
+
+                &lt;div class="panel-body"&gt;
+                    &lt;example&gt;&lt;/example&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+<p>In your terminal run the command &quot;gulp&quot; to render and set the frontend code.</p>
+<h2>The issue explained in detail</h2>
+<p>If you look into the JS code:</p>
+<pre><code class="language-html">Echo.channel('messages')
+    .listen('.newMessage', (message) =&gt; {
+        this.messages.push(message);
+    });</code></pre>
+<p>You can see a dot &quot;.&quot; before newMessage. Laravel sets the default namespace to &quot;App\Events\&quot; so if you overwrite the broadcastAs method in your Event Class you must prefix the listen command with that dot.
+If the dot is not presented it will listen the App\Events\newMessage eventname in this particular case.</p>
+<p>In my case I was forgetting the Dot in front of the name. This way my PusherData in my websockets tab was correctly showing the eventname stated in the php file. Laravel Echo listened tot the full namespaced eventname and therefor not processing the incoming data.</p>
+            
+    <span class="post-footer">—————————————&nbsp;&nbsp; Please share if you liked it &nbsp;&nbsp;—————————————</span>
+
+    <div class="text-center">
+        <a href="https://twitter.com/share"
+           class="twitter-share-button"
+           data-text="Starting with Laravel Echo and PusherJS"
+           data-via="petericebear">Tweet</a>
+        &nbsp&nbsp&nbsp
+        <a href="https://twitter.com/intent/tweet?screen_name=petericebear"
+           class="twitter-mention-button"
+           data-related="themsaid">Tweet to @petericebear</a>
+    </div>
+        </div>
+
+        <div class="col-md-3 col-md-offset-1 sidebar">
+            <div class="avatar">
+                <a href="/"><img src="https://avatars1.githubusercontent.com/u/339796?v=3&s=460"></a>
+            </div>
+
+            <h1>Peter Steenbergen</h1>
+
+            <p>WebDeveloper [PHP, Laravel, Ionic, SOLR] &amp; learning Swift.</p>
+
+            <a href="https://github.com/petericebear">@github</a> ·
+            <a href="https://twitter.com/petericebear">@twitter</a> ·
+            <a href="mailto:psteenbergen@gmail.com">@email</a>
+        </div>
+    </div>
+
+    <p class="footer">
+        &copy; Peter Steenbergen · Design and built with <a href="http://themsaid.github.io/katana/">Katana</a>
+    </p>
+</div>
+
+<script src="/prism.js"></script>
+
+<script>!function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+        if (!d.getElementById(id)) {
+            js = d.createElement(s);
+            js.id = id;
+            js.src = p + '://platform.twitter.com/widgets.js';
+            fjs.parentNode.insertBefore(js, fjs);
+        }
+    }(document, 'script', 'twitter-wjs');</script>
+<script>(function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+        a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+    ga('create', 'UA-77757149-1', 'auto');
+    ga('send', 'pageview');
+</script>
+</body>
+</html>
