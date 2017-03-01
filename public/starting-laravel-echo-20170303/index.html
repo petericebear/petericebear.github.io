@@ -25,9 +25,9 @@
     <h1 class="blog-post-title">Starting with Laravel Echo and PusherJS</h1>
 
                 <hr />
-<p>I was excited from day 1 to try out Laravel Echo. Unfortunately I ran into an issue and stopped working with it and build the needed custom code for realtime updates.
-But last week I found some time to start fiddling with it once again, and I am hooked. </p>
-<p>The issue I had came back but now with the extra time I found the solution and THAT is the reason I wrote this blog item. So lets begin to bring to excitement from Laravel Echo also to you.</p>
+<p>I was excited from day 1 to try out Laravel Echo. Unfortunately I ran into an issue, and stopped working with Laravel Echo and builded the needed custom code for realtime updates.
+But last week I found some spare time to start fiddling with it once again, and now I am hooked. </p>
+<p>The issue I had came back, but now with the extra time I found the solution and THAT is the reason I wrote this blog item. So lets begin to bring to excitement from Laravel Echo also to you. The issue explained in detail can be found at the bottom of the page.</p>
 <h2>Create a new Laravel project</h2>
 <pre><code class="language-bash">laravel new laravelecho</code></pre>
 <p>This will check out a new installation of laravel into the folder laravelecho. If you do not have the Laravel installed you can run &quot;composer create-project laravel/laravel laravelecho&quot;.</p>
@@ -251,7 +251,7 @@ class MessageController extends Controller
         &lt;/div&gt;
     &lt;/div&gt;
 &lt;/div&gt;</code></pre>
-<p>In your terminal run the command &quot;gulp&quot; to render and set the frontend code.</p>
+<p>Run the command &quot;npm run dev&quot; in your terminal. This will render and set the frontend code as a bundle.</p>
 <h2>The issue explained in detail</h2>
 <p>If you look into the JS code:</p>
 <pre><code class="language-html">Echo.channel('messages')
@@ -260,7 +260,7 @@ class MessageController extends Controller
     });</code></pre>
 <p>You can see a dot &quot;.&quot; before newMessage. Laravel sets the default namespace to &quot;App\Events\&quot; so if you overwrite the broadcastAs method in your Event Class you must prefix the listen command with that dot.
 If the dot is not presented it will listen the App\Events\newMessage eventname in this particular case.</p>
-<p>In my case I was forgetting the Dot in front of the name. This way my PusherData in my websockets tab was correctly showing the eventname stated in the php file. Laravel Echo listened tot the full namespaced eventname and therefor not processing the incoming data.</p>
+<p>In my case I was forgetting the dot in front of the name. This way my PusherData in my websockets tab was correctly showing the eventname stated in the php file. Laravel Echo listened tot the full namespaced eventname and therefor not processing the incoming data.</p>
             
     <span class="post-footer">—————————————&nbsp;&nbsp; Please share if you liked it &nbsp;&nbsp;—————————————</span>
 

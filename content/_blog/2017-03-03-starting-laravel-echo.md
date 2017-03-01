@@ -6,10 +6,10 @@ post::brief: Get started with Laravel Echo in Laravel for realtime chat function
 pageTitle: Starting Laravel Echo and PusherJS - realtime message updates - 
 ---------------------------------------------------
 
-I was excited from day 1 to try out Laravel Echo. Unfortunately I ran into an issue and stopped working with it and build the needed custom code for realtime updates.
-But last week I found some time to start fiddling with it once again, and I am hooked. 
+I was excited from day 1 to try out Laravel Echo. Unfortunately I ran into an issue, and stopped working with Laravel Echo and builded the needed custom code for realtime updates.
+But last week I found some spare time to start fiddling with it once again, and now I am hooked. 
 
-The issue I had came back but now with the extra time I found the solution and THAT is the reason I wrote this blog item. So lets begin to bring to excitement from Laravel Echo also to you.
+The issue I had came back, but now with the extra time I found the solution and THAT is the reason I wrote this blog item. So lets begin to bring to excitement from Laravel Echo also to you. The issue explained in detail can be found at the bottom of the page.
 
 ## Create a new Laravel project
 
@@ -312,7 +312,7 @@ Update the content section of the file "resources/views/home.blade.php" to:
 </div>
 ```
 
-In your terminal run the command "gulp" to render and set the frontend code.
+Run the command "npm run dev" in your terminal. This will render and set the frontend code as a bundle.
 
 ## The issue explained in detail
 
@@ -327,4 +327,4 @@ Echo.channel('messages')
 You can see a dot "." before newMessage. Laravel sets the default namespace to "App\Events\" so if you overwrite the broadcastAs method in your Event Class you must prefix the listen command with that dot.
 If the dot is not presented it will listen the App\Events\newMessage eventname in this particular case.
 
-In my case I was forgetting the Dot in front of the name. This way my PusherData in my websockets tab was correctly showing the eventname stated in the php file. Laravel Echo listened tot the full namespaced eventname and therefor not processing the incoming data.
+In my case I was forgetting the dot in front of the name. This way my PusherData in my websockets tab was correctly showing the eventname stated in the php file. Laravel Echo listened tot the full namespaced eventname and therefor not processing the incoming data.
